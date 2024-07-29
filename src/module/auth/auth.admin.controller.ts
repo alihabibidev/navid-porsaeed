@@ -1,9 +1,18 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/basic.dto';
 import { GetCurrentUserId, Public } from '#src/common/decorators';
 import { responseDto } from '#src/common/dto/response.dto';
 import { RefreshJwtGuard } from './guards/refresh-token.guard';
+import { Request } from 'express';
 // import { responseDto } from '#src/common/dto/response.dto';
 @Controller('admin/auth')
 export class AuthAdminController {
@@ -18,6 +27,11 @@ export class AuthAdminController {
   @Post('logout')
   logout(@GetCurrentUserId() userId: number): Promise<boolean> {
     return this.authService.logout(userId);
+  }
+
+  @Post('check-access')
+  checkAccessToken(@Req() request: Request): Promise<any> {
+    return this.authService.checkAccessToken(request);
   }
 
   @Public()

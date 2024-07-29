@@ -41,6 +41,7 @@ export class AuthService {
     console.log(loginDto, user);
     const { accessToken, refreshToken } = this.makeTokensForUser({
       role: user.role,
+      user_name: user.user_name,
       id: user.id,
     });
     await this.updateRtHash(user.id, refreshToken);
@@ -62,6 +63,23 @@ export class AuthService {
     return true;
   }
 
+  async checkAccessToken(request: Request) {
+    try {
+      const token = this.extractToken(request);
+      const payload = this.jwtService.verify<JwtPayload>(token, {
+        secret: this.configService.getOrThrow('auth.jwtAccessTokenSecret', {
+          infer: true,
+        }),
+      });
+      if (typeof payload === 'object' && payload?.id) {
+        return payload;
+      }
+      throw new UnauthorizedException('login on your account ');
+    } catch (error) {
+      throw new UnauthorizedException('login on your account ');
+    }
+  }
+
   async refreshTokens(userId: number, rt: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
 
@@ -73,6 +91,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = this.makeTokensForUser({
       role: user.role,
+      user_name: user.user_name,
       id: user.id,
     });
     await this.updateRtHash(user.id, refreshToken);
