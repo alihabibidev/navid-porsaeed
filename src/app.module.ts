@@ -9,9 +9,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './module/auth/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { RolesGuard } from './module/auth/guards/roles.guard';
+import { CarModule } from './module/car/car.module';
 
 @Module({
-  imports: [ConfigureModule, DatabaseModule, AuthModule, UserModule, JwtModule],
+  imports: [ConfigureModule, DatabaseModule, AuthModule, UserModule, JwtModule, CarModule],
   controllers: [AppController],
   providers: [
     AppService,
