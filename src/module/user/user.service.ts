@@ -16,6 +16,15 @@ export class UserService {
   //   return undefined;
   // }
 
+  async getAllAdmin() {
+    try {
+      return await this.userRepository.find();
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   async createAdminWithSuperAdmin(userCreateDto: UserCreateDto) {
     try {
       const passwordHash = this.hashValue(userCreateDto.password);
