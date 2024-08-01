@@ -10,9 +10,18 @@ import { AuthGuard } from './module/auth/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { RolesGuard } from './module/auth/guards/roles.guard';
 import { CarModule } from './module/car/car.module';
+import { AllDaysPossiblleModule } from './module/all-days-possiblle/all-days-possiblle.module';
 
 @Module({
-  imports: [ConfigureModule, DatabaseModule, AuthModule, UserModule, JwtModule, CarModule],
+  imports: [
+    ConfigureModule,
+    DatabaseModule,
+    AuthModule,
+    UserModule,
+    JwtModule,
+    CarModule,
+    AllDaysPossiblleModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
