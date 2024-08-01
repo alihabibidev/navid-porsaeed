@@ -11,6 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { RolesGuard } from './module/auth/guards/roles.guard';
 import { CarModule } from './module/car/car.module';
 import { AllDaysPossiblleModule } from './module/all-days-possiblle/all-days-possiblle.module';
+import { ReserveModule } from './module/reserve/reserve.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AllDaysPossiblleModule } from './module/all-days-possiblle/all-days-pos
     JwtModule,
     CarModule,
     AllDaysPossiblleModule,
+    ReserveModule,
   ],
   controllers: [AppController],
   providers: [
