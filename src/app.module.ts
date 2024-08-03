@@ -10,7 +10,7 @@ import { AuthGuard } from './module/auth/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { RolesGuard } from './module/auth/guards/roles.guard';
 import { CarModule } from './module/car/car.module';
-import { AllDaysPossiblleModule } from './module/all-days-possiblle/all-days-possiblle.module';
+import { AllDaysPossibleModule } from './module/all-days-possible/all-days-possible.module';
 import { ReserveModule } from './module/reserve/reserve.module';
 
 @Module({
@@ -21,7 +21,7 @@ import { ReserveModule } from './module/reserve/reserve.module';
     UserModule,
     JwtModule,
     CarModule,
-    AllDaysPossiblleModule,
+    AllDaysPossibleModule,
     ReserveModule,
   ],
   controllers: [AppController],

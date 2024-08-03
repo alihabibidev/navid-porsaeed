@@ -9,22 +9,22 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { AllDaysPossiblleService } from './all-days-possiblle.service';
+import { AllDaysPossibleService } from './all-days-possible.service';
 import { Public } from '#src/common/decorators';
-import { AllDaysPossibleEntity } from './all-days-possiblle.entity';
+import { AllDaysPossibleEntity } from './all-days-possible.entity';
 
-@Controller('all-days-possiblle')
-export class AllDaysPossiblleController {
-  constructor(private readonly dayService: AllDaysPossiblleService) {}
+@Controller('all-days-possible')
+export class AllDaysPossibleController {
+  constructor(private readonly dayService: AllDaysPossibleService) {}
 
-  //   POST /all-days-possiblle
+  //   POST /all-days-possible
   @Public()
   @Post()
   async createDaysForYear(@Body('year') year: number): Promise<boolean> {
     return this.dayService.createDaysForYear(year);
   }
 
-  //   GET /all-days-possiblle?year=1403&page=1&limit=10
+  //   GET /all-days-possible?year=1403&page=1&limit=10
   @Get()
   async getDaysForYear(
     @Query('year') year: number,
@@ -44,7 +44,7 @@ export class AllDaysPossiblleController {
     return { data, total };
   }
 
-  //   PATCH /all-days-possiblle/:id
+  //   PATCH /all-days-possible/:id
   @Patch(':id')
   async updateDay(
     @Param('id') id: number,

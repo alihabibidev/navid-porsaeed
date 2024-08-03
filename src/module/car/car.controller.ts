@@ -49,6 +49,10 @@ export class CarController {
     return this.carCompanyService.removeCompany(id);
   }
 
+  /* -------------------------------------------------------------------------- */
+  /*                                   CarType                                  */
+  /* -------------------------------------------------------------------------- */
+
   @Post('type')
   createType(
     @Body() createCarTypeDto: CreateCarTypeDto,
@@ -117,6 +121,7 @@ export class CarController {
   /* -------------------------------------------------------------------------- */
   @Get('aggregation')
   findAllCarAggregationInfo(): Promise<object[]> {
+    //TODO pagination
     return this.carCompanyService.findAllCarAggregationInfo();
   }
 }

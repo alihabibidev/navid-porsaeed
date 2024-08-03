@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
-import { AllDaysPossibleEntity } from './all-days-possiblle.entity';
+import { AllDaysPossibleEntity } from './all-days-possible.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as jalaali from 'jalaali-js'; // Import jalaali-js
 
 @Injectable()
-export class AllDaysPossiblleService {
+export class AllDaysPossibleService {
   constructor(
     @InjectRepository(AllDaysPossibleEntity)
     private dayRepository: Repository<AllDaysPossibleEntity>,
