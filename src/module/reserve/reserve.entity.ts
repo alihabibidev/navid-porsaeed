@@ -1,5 +1,6 @@
 import { BaseEntity } from '#src/core/database';
 import { Column, Entity } from 'typeorm';
+import { ReserveHoursEnum, ReserveStateEnum } from './reserve.enum';
 
 @Entity()
 export class ReserveEntity extends BaseEntity {
@@ -31,10 +32,40 @@ export class ReserveEntity extends BaseEntity {
   @Column()
   issue_tracking: number;
 
+  // TODO add car info
+
   // TODO add date reserve
+  @Column()
+  allDaysPossibleId: number;
 
   @Column()
-  state: number;
+  year: number;
+
+  @Column()
+  month: number;
+
+  @Column()
+  day: number;
+
+  @Column()
+  weekdayNumber: number;
+
+  @Column()
+  weekdayName: string;
+
+  @Column()
+  monthNames: string;
+
+  @Column('enum', {
+    enum: ReserveHoursEnum,
+  })
+  hours: ReserveHoursEnum;
+
+  @Column('enum', {
+    enum: ReserveStateEnum,
+    default: ReserveStateEnum.REQUEST_USER,
+  })
+  state: ReserveStateEnum;
 
   @Column()
   description: string;

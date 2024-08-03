@@ -3,7 +3,6 @@ import { Column, Entity } from 'typeorm';
 
 @Entity()
 export class AllDaysPossibleEntity extends BaseEntity {
-  @Column({ nullable: true })
   @Column()
   year: number;
 
