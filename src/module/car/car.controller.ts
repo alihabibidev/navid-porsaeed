@@ -83,6 +83,13 @@ export class CarController {
     return this.carCompanyService.removeType(id);
   }
 
+  @Get('company/:companyId/types')
+  findTypesByCompany(
+    @Param('companyId') companyId: number,
+  ): Promise<CarTypeEntity[]> {
+    return this.carCompanyService.findTypesByCompany(companyId);
+  }
+
   /* -------------------------------------------------------------------------- */
   /*                                  CarModel                                  */
   /* -------------------------------------------------------------------------- */
@@ -114,6 +121,11 @@ export class CarController {
   @Delete('model/:id')
   removeModel(@Param('id') id: number): Promise<void> {
     return this.carCompanyService.removeModel(id);
+  }
+
+  @Get('type/:typeId/models')
+  findModelsByType(@Param('typeId') typeId: number): Promise<CarModelEntity[]> {
+    return this.carCompanyService.findModelsByType(typeId);
   }
 
   /* -------------------------------------------------------------------------- */

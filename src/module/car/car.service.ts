@@ -80,6 +80,13 @@ export class CarService {
     await this.carTypeRepository.delete(id);
   }
 
+  async findTypesByCompany(companyId: number): Promise<CarTypeEntity[]> {
+    return this.carTypeRepository.find({
+      where: { company: { id: companyId } },
+      relations: ['company'],
+    });
+  }
+
   /* -------------------------------------------------------------------------- */
   /*                                  CarModel                                  */
   /* -------------------------------------------------------------------------- */
@@ -108,6 +115,13 @@ export class CarService {
 
   async removeModel(id: number): Promise<void> {
     await this.carModelRepository.delete(id);
+  }
+
+  async findModelsByType(typeId: number): Promise<CarModelEntity[]> {
+    return this.carModelRepository.find({
+      where: { type: { id: typeId } },
+      relations: ['type'],
+    });
   }
 
   /* -------------------------------------------------------------------------- */

@@ -29,6 +29,8 @@ export class UserService {
     try {
       const passwordHash = this.hashValue(userCreateDto.password);
       const result = await this.userRepository.insert({
+        first_name: userCreateDto.first_name,
+        last_name: userCreateDto.last_name,
         user_name: userCreateDto.user_name,
         password: passwordHash,
         mobile: userCreateDto.mobile,
