@@ -14,7 +14,9 @@ import { CreateCarTypeDto } from './dto/create-car-type.dto';
 import { CarTypeEntity } from './entities/car-type.entity';
 import { CarModelEntity } from './entities/car-model.entity';
 import { CreateCarModelDto } from './dto/create-car-model.dto';
-
+import { adminRoleToUp } from '#src/common/constant/role.constant';
+import { Roles } from '#src/common/decorators/roles.decorator';
+@Roles(...adminRoleToUp)
 @Controller('car')
 export class CarController {
   constructor(private readonly carCompanyService: CarService) {}

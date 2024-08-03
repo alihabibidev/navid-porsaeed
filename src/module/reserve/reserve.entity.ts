@@ -28,13 +28,19 @@ export class ReserveEntity extends BaseEntity {
   @Column()
   chassis_number: number;
 
-  // chassis_number + uuid
+  // chassis_number + Date.now() = chassis_number-Date.now()
   @Column()
   issue_tracking: number;
 
-  // TODO add car info
+  @Column()
+  car_company: string;
 
-  // TODO add date reserve
+  @Column()
+  car_type: string;
+
+  @Column()
+  car_model: string;
+
   @Column()
   allDaysPossibleId: number;
 

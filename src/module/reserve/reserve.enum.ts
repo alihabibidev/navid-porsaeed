@@ -7,8 +7,8 @@ export enum ReserveStateEnum {
   DONE = 'DONE',
 }
 export enum ReserveHoursEnum {
-  AT_8 = 'AT_8',
-  AT_9 = 'AT_9',
-  AT_10 = 'AT_10',
-  AT_11 = 'AT_11',
+  AT_8 = 8,
+  AT_9 = 9,
+  AT_10 = 10,
+  AT_11 = 11,
 }

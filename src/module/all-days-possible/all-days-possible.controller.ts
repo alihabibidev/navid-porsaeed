@@ -29,7 +29,7 @@ export class AllDaysPossibleController {
   async getDaysForYear(
     @Query('year') year: number,
     @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
+    @Query('limit') limit: number = 8,
   ): Promise<{ data: AllDaysPossibleEntity[]; total: number }> {
     if (!year) {
       throw new HttpException('Year is required', HttpStatus.BAD_REQUEST);
