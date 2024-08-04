@@ -64,7 +64,9 @@ export class CarService {
 
   //TODO with company
   async findAllType(): Promise<CarTypeEntity[]> {
-    return await this.carTypeRepository.find();
+    return await this.carTypeRepository.find({
+      relations: ['company'],
+    });
   }
 
   async findOneType(id: number): Promise<CarTypeEntity> {
@@ -102,7 +104,9 @@ export class CarService {
 
   //TODO with types and company
   async findAllModel(): Promise<CarModelEntity[]> {
-    return await this.carModelRepository.find();
+    return await this.carModelRepository.find({
+      relations: ['type', 'type.company'],
+    });
   }
 
   async findOneModel(id: number): Promise<CarModelEntity> {
