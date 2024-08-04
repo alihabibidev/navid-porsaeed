@@ -4,11 +4,11 @@ import { CarTypeEntity } from './car-type.entity';
 
 @Entity()
 export class CarModelEntity extends BaseEntity {
-  @Column({ nullable: true })
+  @Column()
   name: string;
 
-  // @Column()
-  // typeId: number;
+  @Column()
+  typeId: number;
 
   @ManyToOne(() => CarTypeEntity, (type) => type.models, {
     onDelete: 'CASCADE',

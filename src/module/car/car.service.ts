@@ -56,10 +56,13 @@ export class CarService {
   /* -------------------------------------------------------------------------- */
 
   async createType(createCarTypeDto: CreateCarTypeDto): Promise<CarTypeEntity> {
+    console.log(createCarTypeDto);
+
     const carType = this.carTypeRepository.create(createCarTypeDto);
     return await this.carTypeRepository.save(carType);
   }
 
+  //TODO with company
   async findAllType(): Promise<CarTypeEntity[]> {
     return await this.carTypeRepository.find();
   }
@@ -97,6 +100,7 @@ export class CarService {
     return await this.carModelRepository.save(carModel);
   }
 
+  //TODO with types and company
   async findAllModel(): Promise<CarModelEntity[]> {
     return await this.carModelRepository.find();
   }

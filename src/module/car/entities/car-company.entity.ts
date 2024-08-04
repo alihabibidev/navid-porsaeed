@@ -4,7 +4,7 @@ import { CarTypeEntity } from './car-type.entity';
 
 @Entity()
 export class CarCompanyEntity extends BaseEntity {
-  @Column({ nullable: true })
+  @Column()
   name: string;
 
   @OneToMany(() => CarTypeEntity, (carType) => carType.company, {
