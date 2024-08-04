@@ -17,11 +17,39 @@ export class AllDaysPossibleService {
     year: number,
     page: number,
     limit: number,
+    futureOnly: boolean, // پارامتر برای مشخص کردن نوع فیلتر
   ): Promise<{ data: AllDaysPossibleEntity[]; total: number }> {
     const offset = (page - 1) * limit;
 
+    // گرفتن تاریخ و زمان فعلی و تبدیل آن به جلالی
+    const now = new Date();
+    const jalaaliDate = jalaali.toJalaali(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      now.getDate(),
+    );
+    const currentYear = jalaaliDate.jy;
+    const currentMonth = jalaaliDate.jm;
+    const currentDay = jalaaliDate.jd;
+
+    // شرط فیلتر براساس پارامتر futureOnly
+    const whereCondition = futureOnly
+      ? {
+          year,
+          $or: [
+            {
+              year: currentYear,
+              month: currentMonth,
+              day: { $gte: currentDay },
+            },
+            { year: currentYear, month: { $gt: currentMonth } },
+            { year: { $gt: currentYear } },
+          ],
+        }
+      : { year };
+
     const [data, total] = await this.dayRepository.findAndCount({
-      where: { year },
+      where: whereCondition,
       order: { month: 'ASC', day: 'ASC' },
       skip: offset,
       take: limit,

@@ -30,6 +30,7 @@ export class AllDaysPossibleController {
     @Query('year') year: number,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 8,
+    @Query('futureOnly') futureOnly: string = 'false',
   ): Promise<{ data: AllDaysPossibleEntity[]; total: number }> {
     if (!year) {
       throw new HttpException('Year is required', HttpStatus.BAD_REQUEST);
@@ -39,6 +40,7 @@ export class AllDaysPossibleController {
       year,
       page,
       limit,
+      futureOnly === 'true', // تبدیل پارامتر به boolean
     );
 
     return { data, total };

@@ -17,29 +17,29 @@ export class ReserveEntity extends BaseEntity {
   email: string;
 
   @Column()
-  company: number;
+  companyId: number;
 
   @Column()
-  type: number;
+  typeId: number;
 
   @Column()
-  model: number;
+  modelId: number;
 
   @Column()
-  chassis_number: number;
+  chassis_number: string;
 
   // chassis_number + Date.now() = chassis_number-Date.now()
   @Column()
-  issue_tracking: number;
+  issue_tracking: string;
 
   @Column()
-  car_company: string;
+  company_name: string;
 
   @Column()
-  car_type: string;
+  type_name: string;
 
   @Column()
-  car_model: string;
+  model_name: string;
 
   @Column()
   allDaysPossibleId: number;
