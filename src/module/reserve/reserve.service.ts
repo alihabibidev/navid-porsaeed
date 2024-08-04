@@ -20,6 +20,7 @@ export class ReserveService {
   async createReserve(
     createReserveDto: CreateReserveDto,
   ): Promise<ReserveEntity> {
+    //TODO validate date,capacity,hours, . . .
     const { chassis_number, allDaysPossibleId, hours, ...otherData } =
       createReserveDto;
 
