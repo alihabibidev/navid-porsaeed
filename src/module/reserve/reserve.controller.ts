@@ -14,11 +14,13 @@ import { ReserveService } from './reserve.service';
 import { CreateReserveDto } from './dto/create-reserve.dto';
 import { ReserveEntity } from './reserve.entity';
 import { GetReservesFilterDto } from './dto/get-reserves-filter.dto';
+import { Public } from '#src/common/decorators';
 
 @Controller('reserve')
 export class ReserveController {
   constructor(private readonly reserveService: ReserveService) {}
 
+  @Public()
   @Post()
   async createReserve(
     @Body() createReserveDto: CreateReserveDto,
@@ -42,6 +44,7 @@ export class ReserveController {
   }
 
   // GET /reserves/chassis/1234567890
+  @Public()
   @Get('/chassis/:chassisNumber')
   async getReservesByChassisNumber(
     @Param('chassisNumber') chassisNumber: string,
@@ -51,6 +54,7 @@ export class ReserveController {
 
   // PATCH /reserves/cancel/123
   @Patch('/cancel/:id')
+  @Public()
   async cancelReserveIfWithin24Hours(
     @Param('id') reserveId: string,
   ): Promise<ReserveEntity> {

@@ -17,7 +17,7 @@ export class AllDaysPossibleService {
     year: number,
     page: number,
     limit: number,
-    futureOnly: boolean, // پارامتر برای مشخص کردن نوع فیلتر
+    futureOnly: boolean,
   ): Promise<{ data: AllDaysPossibleEntity[]; total: number }> {
     const offset = (page - 1) * limit;
 
@@ -32,31 +32,73 @@ export class AllDaysPossibleService {
     const currentMonth = jalaaliDate.jm;
     const currentDay = jalaaliDate.jd;
 
-    // شرط فیلتر براساس پارامتر futureOnly
-    const whereCondition = futureOnly
-      ? {
-          year,
-          $or: [
-            {
-              year: currentYear,
-              month: currentMonth,
-              day: { $gte: currentDay },
-            },
-            { year: currentYear, month: { $gt: currentMonth } },
-            { year: { $gt: currentYear } },
-          ],
-        }
-      : { year };
+    const queryBuilder = this.dayRepository.createQueryBuilder('day');
 
-    const [data, total] = await this.dayRepository.findAndCount({
-      where: whereCondition,
-      order: { month: 'ASC', day: 'ASC' },
-      skip: offset,
-      take: limit,
-    });
+    queryBuilder.where('day.year = :year', { year });
+
+    if (futureOnly) {
+      queryBuilder.andWhere(
+        '(day.year > :currentYear OR (day.year = :currentYear AND (day.month > :currentMonth OR (day.month = :currentMonth AND day.day >= :currentDay))))',
+        {
+          currentYear,
+          currentMonth,
+          currentDay,
+        },
+      );
+    }
+
+    queryBuilder.orderBy('day.month', 'ASC').addOrderBy('day.day', 'ASC');
+    queryBuilder.skip(offset).take(limit);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
 
     return { data, total };
   }
+
+  // async getDaysForYear(
+  //   year: number,
+  //   page: number,
+  //   limit: number,
+  //   futureOnly: boolean, // پارامتر برای مشخص کردن نوع فیلتر
+  // ): Promise<{ data: AllDaysPossibleEntity[]; total: number }> {
+  //   const offset = (page - 1) * limit;
+
+  //   // گرفتن تاریخ و زمان فعلی و تبدیل آن به جلالی
+  //   const now = new Date();
+  //   const jalaaliDate = jalaali.toJalaali(
+  //     now.getFullYear(),
+  //     now.getMonth() + 1,
+  //     now.getDate(),
+  //   );
+  //   const currentYear = jalaaliDate.jy;
+  //   const currentMonth = jalaaliDate.jm;
+  //   const currentDay = jalaaliDate.jd;
+
+  //   // شرط فیلتر براساس پارامتر futureOnly
+  //   const whereCondition = futureOnly
+  //     ? {
+  //         year,
+  //         $or: [
+  //           {
+  //             year: currentYear,
+  //             month: currentMonth,
+  //             day: { $gte: currentDay },
+  //           },
+  //           { year: currentYear, month: { $gt: currentMonth } },
+  //           { year: { $gt: currentYear } },
+  //         ],
+  //       }
+  //     : { year };
+
+  //   const [data, total] = await this.dayRepository.findAndCount({
+  //     where: whereCondition,
+  //     order: { month: 'ASC', day: 'ASC' },
+  //     skip: offset,
+  //     take: limit,
+  //   });
+
+  //   return { data, total };
+  // }
 
   async updateDay(
     id: number,
