@@ -16,6 +16,7 @@ import { CarModelEntity } from './entities/car-model.entity';
 import { CreateCarModelDto } from './dto/create-car-model.dto';
 import { adminRoleToUp } from '#src/common/constant/role.constant';
 import { Roles } from '#src/common/decorators/roles.decorator';
+import { Public } from '#src/common/decorators';
 @Roles(...adminRoleToUp)
 @Controller('car')
 export class CarController {
@@ -28,11 +29,13 @@ export class CarController {
     return this.carCompanyService.createCompany(createCarCompanyDto);
   }
 
+  @Public()
   @Get('company')
   findAllCompany(): Promise<CarCompanyEntity[]> {
     return this.carCompanyService.findAllCompany();
   }
 
+  @Public()
   @Get('company/:id')
   findOneCompany(@Param('id') id: number): Promise<CarCompanyEntity> {
     return this.carCompanyService.findOneCompany(id);
@@ -62,11 +65,13 @@ export class CarController {
     return this.carCompanyService.createType(createCarTypeDto);
   }
 
+  @Public()
   @Get('type')
   findAllType(): Promise<CarTypeEntity[]> {
     return this.carCompanyService.findAllType();
   }
 
+  @Public()
   @Get('type/:id')
   findOneType(@Param('id') id: number): Promise<CarTypeEntity> {
     return this.carCompanyService.findOneType(id);
@@ -85,6 +90,7 @@ export class CarController {
     return this.carCompanyService.removeType(id);
   }
 
+  @Public()
   @Get('company/:companyId/types')
   findTypesByCompany(
     @Param('companyId') companyId: number,
@@ -102,11 +108,13 @@ export class CarController {
     return this.carCompanyService.createModel(createCarModelDto);
   }
 
+  @Public()
   @Get('model')
   findAllModel(): Promise<CarModelEntity[]> {
     return this.carCompanyService.findAllModel();
   }
 
+  @Public()
   @Get('model/:id')
   findOneModel(@Param('id') id: number): Promise<CarModelEntity> {
     return this.carCompanyService.findOneModel(id);
@@ -125,6 +133,7 @@ export class CarController {
     return this.carCompanyService.removeModel(id);
   }
 
+  @Public()
   @Get('type/:typeId/models')
   findModelsByType(@Param('typeId') typeId: number): Promise<CarModelEntity[]> {
     return this.carCompanyService.findModelsByType(typeId);
@@ -133,6 +142,7 @@ export class CarController {
   /* -------------------------------------------------------------------------- */
   /*                               CarAggregationInfo                               */
   /* -------------------------------------------------------------------------- */
+  @Public()
   @Get('aggregation')
   findAllCarAggregationInfo(): Promise<object[]> {
     //TODO pagination
