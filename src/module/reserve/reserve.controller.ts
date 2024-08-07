@@ -15,6 +15,8 @@ import { CreateReserveDto } from './dto/create-reserve.dto';
 import { ReserveEntity } from './reserve.entity';
 import { GetReservesFilterDto } from './dto/get-reserves-filter.dto';
 import { Public } from '#src/common/decorators';
+import { Roles } from '#src/common/decorators/roles.decorator';
+import { adminRoleToUp } from '#src/common/constant/role.constant';
 
 @Controller('reserve')
 export class ReserveController {
@@ -43,13 +45,20 @@ export class ReserveController {
     return await this.reserveService.getReserves(filterDto);
   }
 
+  @Get('count-by-state')
+  async getCountByState() {
+    return await this.reserveService.getCountByState();
+  }
+
   // GET /reserves/chassis/1234567890
   @Public()
-  @Get('/chassis/:chassisNumber')
-  async getReservesByChassisNumber(
-    @Param('chassisNumber') chassisNumber: string,
+  @Get('/chassis/:chassisNumberOrIssueTracking')
+  async getReservesByChassisNumberOrIssueTracking(
+    @Param('chassisNumberOrIssueTracking') chassisNumberOrIssueTracking: string,
   ): Promise<ReserveEntity[]> {
-    return await this.reserveService.getReservesByChassisNumber(chassisNumber);
+    return await this.reserveService.getReservesByChassisNumberOrIssueTracking(
+      chassisNumberOrIssueTracking,
+    );
   }
 
   // PATCH /reserves/cancel/123
@@ -60,6 +69,22 @@ export class ReserveController {
   ): Promise<ReserveEntity> {
     try {
       return await this.reserveService.cancelIfWithin24Hours(reserveId);
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Roles(...adminRoleToUp)
+  @Patch('/admin/change-state/:id')
+  async changeState(
+    @Param('id') reserveId: string,
+    @Body() state: string,
+  ): Promise<any> {
+    try {
+      return await this.reserveService.changeState(reserveId, state);
     } catch (error) {
       throw new HttpException(
         error.message,

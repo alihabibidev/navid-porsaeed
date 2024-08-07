@@ -5,6 +5,7 @@ import {
   Between,
   DataSource,
   FindManyOptions,
+  In,
   LessThanOrEqual,
   MoreThanOrEqual,
   Repository,
@@ -15,6 +16,7 @@ import { AllDaysPossibleEntity } from '../all-days-possible/all-days-possible.en
 import { ReserveStateEnum } from './reserve.enum';
 import { GetReservesFilterDto } from './dto/get-reserves-filter.dto';
 import { convertJalaliToGregorian } from '#src/common/utils/date.utils';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ReserveService {
@@ -48,8 +50,7 @@ export class ReserveService {
       );
     }
 
-    const timestamp = Date.now();
-    const issue_tracking = `${chassis_number}-${timestamp}`;
+    const issue_tracking = `OR-${uuidv4()}`;
 
     // آغاز تراکنش
     const queryRunner = this.dataSource.createQueryRunner();
@@ -151,6 +152,11 @@ export class ReserveService {
     // فیلتر بر اساس وضعیت
     if (state) {
       where.state = state;
+    } else {
+      where.state = In([
+        ReserveStateEnum.REQUEST_USER,
+        ReserveStateEnum.INPROGRESS,
+      ]);
     }
 
     // تبدیل تاریخ‌های جلالی به میلادی
@@ -204,12 +210,39 @@ export class ReserveService {
     return { data, count };
   }
 
-  async getReservesByChassisNumber(
-    chassisNumber: string,
+  async getCountByState() {
+    return await this.reserveRepository
+      .createQueryBuilder('reserve')
+      .select('reserve.state, COUNT(*) as count')
+      .groupBy('reserve.state')
+      .getRawMany();
+  }
+
+  async changeState(reserveId, state) {
+    return await this.reserveRepository.update({ id: reserveId }, { state });
+  }
+
+  async getReservesByChassisNumberOrIssueTracking(
+    chassisNumberOrIssueTracking: string,
   ): Promise<ReserveEntity[]> {
+    if (
+      chassisNumberOrIssueTracking[0] === 'O' &&
+      chassisNumberOrIssueTracking[1] === 'R'
+    ) {
+      return await this.reserveRepository.find({
+        where: {
+          issue_tracking: chassisNumberOrIssueTracking,
+        },
+        order: {
+          year: 'DESC',
+          month: 'DESC',
+          day: 'DESC',
+        },
+      });
+    }
     return await this.reserveRepository.find({
       where: {
-        chassis_number: chassisNumber,
+        chassis_number: chassisNumberOrIssueTracking,
       },
       order: {
         year: 'DESC',
