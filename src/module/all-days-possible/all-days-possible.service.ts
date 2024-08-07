@@ -38,7 +38,7 @@ export class AllDaysPossibleService {
 
     if (futureOnly) {
       queryBuilder.andWhere(
-        '(day.year > :currentYear OR (day.year = :currentYear AND (day.month > :currentMonth OR (day.month = :currentMonth AND day.day >= :currentDay))))',
+        '(day.year > :currentYear OR (day.year = :currentYear AND (day.month > :currentMonth OR (day.month = :currentMonth AND day.day > :currentDay))))',
         {
           currentYear,
           currentMonth,

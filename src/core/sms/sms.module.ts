@@ -27,9 +27,10 @@ export class SmsModule implements OnModuleInit {
         state: 'salam3',
       },
       patternId: 1217,
-      from: '21000051112',
+      from: '10003393',
       type: 0,
     };
+    // from: '21000051112',
 
     // صدا زدن تابع sendSMS
     const result = await this.smsService.sendSMS(smsDetails);
