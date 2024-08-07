@@ -57,17 +57,6 @@ export class ReserveService {
     await queryRunner.startTransaction();
 
     try {
-      // ایجاد رزرو جدید
-      const reserve = this.reserveRepository.create({
-        ...otherData,
-        chassis_number,
-        issue_tracking,
-        allDaysPossibleId,
-        hours,
-      });
-
-      const savedReserve = await queryRunner.manager.save(reserve);
-
       // پیدا کردن روز مربوطه در AllDaysPossibleEntity
       const dayRecord = await queryRunner.manager.findOne(
         AllDaysPossibleEntity,
@@ -82,6 +71,24 @@ export class ReserveService {
 
       if (!dayRecord) {
         throw new HttpException('Day not found', HttpStatus.NOT_FOUND);
+      }
+
+      if (hours === 8) {
+        if (dayRecord.capacityAt8 === dayRecord.reservationsAt8) {
+          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+        }
+      } else if (hours === 9) {
+        if (dayRecord.capacityAt9 === dayRecord.reservationsAt9) {
+          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+        }
+      } else if (hours === 10) {
+        if (dayRecord.capacityAt10 === dayRecord.reservationsAt10) {
+          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+        }
+      } else if (hours === 11) {
+        if (dayRecord.capacityAt11 === dayRecord.reservationsAt11) {
+          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+        }
       }
 
       // بروزرسانی ظرفیت رزرو بر اساس ساعت رزرو شده
@@ -107,6 +114,17 @@ export class ReserveService {
 
       // ذخیره تغییرات
       await queryRunner.manager.save(dayRecord);
+
+      // ایجاد رزرو جدید
+      const reserve = this.reserveRepository.create({
+        ...otherData,
+        chassis_number,
+        issue_tracking,
+        allDaysPossibleId,
+        hours,
+      });
+
+      const savedReserve = await queryRunner.manager.save(reserve);
 
       // تایید تراکنش
       await queryRunner.commitTransaction();

@@ -13,7 +13,7 @@ export class ReserveEntity extends BaseEntity {
   @Column()
   mobile: string;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   email: string;
 
   @Column()
@@ -73,7 +73,7 @@ export class ReserveEntity extends BaseEntity {
   })
   state: ReserveStateEnum;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   description: string;
 
   @Column()
