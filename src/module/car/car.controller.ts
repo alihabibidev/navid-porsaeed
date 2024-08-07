@@ -17,11 +17,12 @@ import { CreateCarModelDto } from './dto/create-car-model.dto';
 import { adminRoleToUp } from '#src/common/constant/role.constant';
 import { Roles } from '#src/common/decorators/roles.decorator';
 import { Public } from '#src/common/decorators';
-@Roles(...adminRoleToUp)
+
 @Controller('car')
 export class CarController {
   constructor(private readonly carCompanyService: CarService) {}
 
+  @Roles(...adminRoleToUp)
   @Post('company')
   createCompany(
     @Body() createCarCompanyDto: CreateCarCompanyDto,
@@ -41,6 +42,7 @@ export class CarController {
     return this.carCompanyService.findOneCompany(id);
   }
 
+  @Roles(...adminRoleToUp)
   @Patch('company/:id')
   updateCompany(
     @Param('id') id: number,
@@ -49,6 +51,7 @@ export class CarController {
     return this.carCompanyService.updateCompany(id, updateCarCompanyDto);
   }
 
+  @Roles(...adminRoleToUp)
   @Delete('company/:id')
   removeCompany(@Param('id') id: number): Promise<void> {
     return this.carCompanyService.removeCompany(id);
@@ -58,6 +61,7 @@ export class CarController {
   /*                                   CarType                                  */
   /* -------------------------------------------------------------------------- */
 
+  @Roles(...adminRoleToUp)
   @Post('type')
   createType(
     @Body() createCarTypeDto: CreateCarTypeDto,
@@ -77,6 +81,7 @@ export class CarController {
     return this.carCompanyService.findOneType(id);
   }
 
+  @Roles(...adminRoleToUp)
   @Patch('type/:id')
   updateType(
     @Param('id') id: number,
@@ -85,6 +90,7 @@ export class CarController {
     return this.carCompanyService.updateType(id, updateCarTypeDto);
   }
 
+  @Roles(...adminRoleToUp)
   @Delete('type/:id')
   removeType(@Param('id') id: number): Promise<void> {
     return this.carCompanyService.removeType(id);
@@ -101,6 +107,7 @@ export class CarController {
   /* -------------------------------------------------------------------------- */
   /*                                  CarModel                                  */
   /* -------------------------------------------------------------------------- */
+  @Roles(...adminRoleToUp)
   @Post('model')
   createModel(
     @Body() createCarModelDto: CreateCarModelDto,
@@ -120,6 +127,7 @@ export class CarController {
     return this.carCompanyService.findOneModel(id);
   }
 
+  @Roles(...adminRoleToUp)
   @Patch('model/:id')
   updateModel(
     @Param('id') id: number,
@@ -128,6 +136,7 @@ export class CarController {
     return this.carCompanyService.updateModel(id, updateCarModelDto);
   }
 
+  @Roles(...adminRoleToUp)
   @Delete('model/:id')
   removeModel(@Param('id') id: number): Promise<void> {
     return this.carCompanyService.removeModel(id);
