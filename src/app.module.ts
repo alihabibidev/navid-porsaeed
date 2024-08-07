@@ -12,6 +12,8 @@ import { RolesGuard } from './module/auth/guards/roles.guard';
 import { CarModule } from './module/car/car.module';
 import { AllDaysPossibleModule } from './module/all-days-possible/all-days-possible.module';
 import { ReserveModule } from './module/reserve/reserve.module';
+import { SmsModule } from './core/sms/sms.module';
+import { HttpModule } from './core/http/http.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { ReserveModule } from './module/reserve/reserve.module';
     CarModule,
     AllDaysPossibleModule,
     ReserveModule,
+    SmsModule,
+    HttpModule,
   ],
   controllers: [AppController],
   providers: [

@@ -25,6 +25,7 @@ export class AllDaysPossibleController {
   }
 
   //   GET /all-days-possible?year=1403&page=1&limit=10
+  @Public()
   @Get()
   async getDaysForYear(
     @Query('year') year: number,

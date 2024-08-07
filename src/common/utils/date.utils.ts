@@ -25,6 +25,12 @@ export function convertJalaliToTimestamp(
   return date.getTime();
 }
 
+export function convertJalaliToGregorian(jalaliDate: string): Date {
+  const [year, month, day] = jalaliDate.split('-').map(Number);
+  const { gy, gm, gd } = jalaali.toGregorian(year, month, day);
+  return new Date(gy, gm - 1, gd); // ماه‌ها در جاوااسکریپت از 0 شروع می‌شوند
+}
+
 // // Example usage
 // const year = 1403; // مثال: سال ۱۴۰۳
 // const month = 5; // مثال: مرداد
