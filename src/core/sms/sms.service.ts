@@ -28,7 +28,7 @@ export class SmsService {
     username,
     password,
     from,
-    recipient,
+    recipients,
     message,
     patternId,
     type,
@@ -47,7 +47,7 @@ export class SmsService {
       const response = await this.axiosInstance.post(
         '/sms/pattern-send',
         {
-          recipient,
+          recipients,
           message,
           from,
           type,
@@ -80,7 +80,7 @@ export interface SendSMSDto {
   token?: string;
   username?: string;
   password?: string;
-  recipient: string[];
+  recipients: string[];
   message: { [key: string]: string };
   from: string;
   type: number;

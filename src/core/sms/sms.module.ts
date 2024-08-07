@@ -22,7 +22,7 @@ export class SmsModule implements OnModuleInit {
       token: '274960aa63f900c0e6b1be5031615f952dc837ff',
       username: '09336130786',
       password: 'n9140n',
-      recipient: ['09358199598'],
+      recipients: ['09358199598'],
       message: {
         state: 'salam3',
       },
