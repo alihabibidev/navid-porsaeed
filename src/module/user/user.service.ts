@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { UserCreateDto } from './dto/user-create.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { genSaltSync, hashSync } from 'bcrypt';
 
 @Injectable()
@@ -42,6 +42,14 @@ export class UserService {
       }
     } catch (error) {
       console.log(error);
+      if (error instanceof QueryFailedError) {
+        if ((error as any).code === '23505') {
+          console.log(
+            `Unique constraint ${(error as any).constraint} failed aliiiiiii`,
+          );
+          throw new HttpException('Unique constraint', 400);
+        }
+      }
       throw error;
     }
   }
