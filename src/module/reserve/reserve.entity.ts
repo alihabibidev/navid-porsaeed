@@ -62,6 +62,9 @@ export class ReserveEntity extends BaseEntity {
   @Column()
   monthNames: string;
 
+  @Column()
+  reason: string;
+
   @Column('enum', {
     enum: ReserveHoursEnum,
   })

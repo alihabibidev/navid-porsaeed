@@ -50,7 +50,7 @@ export class ReserveController {
     return await this.reserveService.getCountByState();
   }
 
-  // GET /reserves/chassis/1234567890
+  // GET /reserve/chassis/1234567890
   @Public()
   @Get('/chassis/:chassisNumberOrIssueTracking')
   async getReservesByChassisNumberOrIssueTracking(
@@ -61,7 +61,7 @@ export class ReserveController {
     );
   }
 
-  // PATCH /reserves/cancel/123
+  // PATCH /reserve/cancel/123
   @Patch('/cancel/:id')
   @Public()
   async cancelReserveIfWithin24Hours(
