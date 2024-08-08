@@ -1,5 +1,6 @@
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { ReserveStateEnum } from '../reserve.enum';
+import { Type } from 'class-transformer';
 
 export class GetReservesFilterDto {
   @IsOptional()
@@ -16,11 +17,14 @@ export class GetReservesFilterDto {
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   @Min(1)
   page?: number;
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
+
   @Min(1)
   limit?: number;
 }
