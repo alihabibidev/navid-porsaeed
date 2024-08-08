@@ -24,7 +24,6 @@ export class GetReservesFilterDto {
   @IsOptional()
   @IsInt()
   @Type(() => Number)
-
   @Min(1)
   limit?: number;
 }
