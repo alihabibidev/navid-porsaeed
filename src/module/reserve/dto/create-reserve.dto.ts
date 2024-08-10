@@ -58,6 +58,9 @@ export class CreateReserveDto {
   type_name: string;
 
   @IsString()
+  reason: string;
+
+  @IsString()
   model_name: string;
 
   @IsInt()
