@@ -81,7 +81,7 @@ export class ReserveController {
   @Patch('/admin/change-state/:id')
   async changeState(
     @Param('id') reserveId: string,
-    @Body() state: string,
+    @Body('state') state: string,
   ): Promise<any> {
     try {
       return await this.reserveService.changeState(reserveId, state);
