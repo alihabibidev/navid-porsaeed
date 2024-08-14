@@ -3,7 +3,9 @@ import axios, { AxiosInstance } from 'axios';
 @Injectable()
 export class SmsService {
   private axiosInstance: AxiosInstance;
-  private readonly BASE_URL = 'http://185.112.33.62/api/v1/rest';
+  // private readonly BASE_URL = 'http://185.112.33.62/api/v1/rest';
+  private readonly BASE_URL =
+    'https://api-gateway.adsefid.com/webservice/api/v1.0/';
   constructor() {
     this.axiosInstance = axios.create({
       baseURL: this.BASE_URL,
@@ -24,34 +26,22 @@ export class SmsService {
   }
 
   async sendSMS({
-    token,
-    username,
-    password,
-    from,
-    recipients,
+    lineNumber,
+    receptor,
     message,
-    patternId,
-    type,
+    tag,
   }: SendSMSDto): Promise<any> {
     try {
       const headers: any = {};
 
-      // تنظیم احراز هویت
-      if (token) {
-        headers['token'] = token;
-      } else {
-        headers['username'] = username;
-        headers['password'] = password;
-      }
-
+      headers['x-api-key'] = 'e4a210753806824ce159ef1de52dbb94884059c5';
       const response = await this.axiosInstance.post(
-        '/sms/pattern-send',
+        'SendSingleMessage',
         {
-          recipients,
+          receptor,
+          lineNumber,
           message,
-          from,
-          type,
-          patternId,
+          tag,
         },
         {
           headers,
@@ -77,12 +67,8 @@ export class SmsService {
 }
 
 export interface SendSMSDto {
-  token?: string;
-  username?: string;
-  password?: string;
-  recipients: string[];
-  message: { [key: string]: string };
-  from: string;
-  type: number;
-  patternId: number | string;
+  receptor: string;
+  message: string;
+  lineNumber: string;
+  tag?: string;
 }

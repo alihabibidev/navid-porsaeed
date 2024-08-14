@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { QueryFailedError, Repository } from 'typeorm';
 import { genSaltSync, hashSync } from 'bcrypt';
+import { Role } from '#src/common/constant/role.constant';
 
 @Injectable()
 export class UserService {
@@ -27,6 +28,12 @@ export class UserService {
 
   async createAdminWithSuperAdmin(userCreateDto: UserCreateDto) {
     try {
+      if (userCreateDto.role === Role.SUPER_ADMIN) {
+        throw new HttpException(
+          'You do not have permission to create super admin',
+          403,
+        );
+      }
       const passwordHash = this.hashValue(userCreateDto.password);
       const result = await this.userRepository.insert({
         first_name: userCreateDto.first_name,
@@ -34,6 +41,7 @@ export class UserService {
         user_name: userCreateDto.user_name,
         password: passwordHash,
         mobile: userCreateDto.mobile,
+        role: userCreateDto.role,
       });
       if (result) {
         return true;

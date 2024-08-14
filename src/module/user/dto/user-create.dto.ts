@@ -1,4 +1,5 @@
-import { IsString } from 'class-validator';
+import { Role } from '#src/common/constant/role.constant';
+import { IsEnum, IsString } from 'class-validator';
 
 export class UserCreateDto {
   @IsString()
@@ -15,4 +16,7 @@ export class UserCreateDto {
 
   @IsString()
   mobile: string;
+
+  @IsEnum(Role)
+  role: Role;
 }

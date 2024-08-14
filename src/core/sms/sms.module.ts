@@ -6,7 +6,9 @@ import { HttpModule } from '../http/http.module';
   imports: [
     HttpModule.register({
       // baseURL: 'http://185.112.33.62/api/v1/rest', // تنظیم baseURL ظبرای این ماژول
-      baseURL: 'https://my.hiro-sms.com/api/v1/rest', // تنظیم baseURL ظبرای این ماژول
+      //baseURL: 'https://my.hiro-sms.com/api/v1/rest', // تنظیم baseURL ظبرای این ماژول
+      baseURL:
+        'https://api-gateway.adsefid.com/webservice/api/v1.0/SendSingleMessage', // تنظیم baseURL ظبرای این ماژول
     }),
   ],
   providers: [SmsService],
@@ -19,18 +21,11 @@ export class SmsModule implements OnModuleInit {
 
     // مقداردهی اولیه برای ارسال پیامک
     const smsDetails: SendSMSDto = {
-      token: '274960aa63f900c0e6b1be5031615f952dc837ff',
-      username: '09336130786',
-      password: 'n9140n',
-      recipients: ['09358199598'],
-      message: {
-        state: 'salam3',
-      },
-      patternId: 1217,
-      from: '10003393',
-      type: 0,
+      receptor: '09358199598',
+      message: 'متن پیام لغو 11',
+      lineNumber: '9890000000',
+      tag: 'test',
     };
-    // from: '21000051112',
 
     // صدا زدن تابع sendSMS
     const result = await this.smsService.sendSMS(smsDetails);
