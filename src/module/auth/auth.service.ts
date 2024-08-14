@@ -28,8 +28,11 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const { user_name, password } = loginDto;
+    console.log(loginDto);
 
     const user = await this.userRepository.findOneBy({ user_name });
+    console.log(user);
+
     if (!user) {
       throw new UnauthorizedException('username or password is incorrect');
     }
