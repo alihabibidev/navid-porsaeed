@@ -16,7 +16,10 @@ import { ReserveEntity } from './reserve.entity';
 import { GetReservesFilterDto } from './dto/get-reserves-filter.dto';
 import { Public } from '#src/common/decorators';
 import { Roles } from '#src/common/decorators/roles.decorator';
-import { adminRoleToUp } from '#src/common/constant/role.constant';
+import {
+  adminRoleToUp,
+  editorRoleToUp,
+} from '#src/common/constant/role.constant';
 
 @Controller('reserve')
 export class ReserveController {
@@ -45,6 +48,7 @@ export class ReserveController {
     return await this.reserveService.getReserves(filterDto);
   }
 
+  @Roles(...adminRoleToUp)
   @Get('count-by-state')
   async getCountByState() {
     return await this.reserveService.getCountByState();
@@ -62,8 +66,8 @@ export class ReserveController {
   }
 
   // PATCH /reserve/cancel/123
-  @Patch('/cancel/:id')
   @Public()
+  @Patch('/cancel/:id')
   async cancelReserveIfWithin24Hours(
     @Param('id') reserveId: string,
   ): Promise<ReserveEntity> {
@@ -77,7 +81,7 @@ export class ReserveController {
     }
   }
 
-  @Roles(...adminRoleToUp)
+  @Roles(...editorRoleToUp)
   @Patch('/admin/change-state/:id')
   async changeState(
     @Param('id') reserveId: string,

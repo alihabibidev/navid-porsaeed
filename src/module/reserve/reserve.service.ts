@@ -219,7 +219,17 @@ export class ReserveService {
   }
 
   async changeState(reserveId, state) {
-    return await this.reserveRepository.update({ id: reserveId }, { state });
+    const result = await this.reserveRepository.update(
+      { id: reserveId },
+      { state },
+    );
+    // const updatedReserve = await this.reserveRepository.findOne({
+    //   where: { id: reserveId },
+    // });
+    // console.log(updatedReserve);
+
+    //TODO Send SMS
+    return result;
   }
 
   async getReservesByChassisNumberOrIssueTracking(
@@ -325,6 +335,8 @@ export class ReserveService {
 
         // تایید تراکنش
         await queryRunner.commitTransaction();
+
+        //TODO Send SMS
 
         return reserve;
       } else {
