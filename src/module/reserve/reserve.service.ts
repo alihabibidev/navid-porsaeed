@@ -28,6 +28,29 @@ export class ReserveService {
     private dataSource: DataSource,
   ) {}
 
+  private async generateUniqueIssueTracking(): Promise<string> {
+    const generateRandomNumber = (): string => {
+      // تولید یک عدد تصادفی 8 رقمی
+      const min = 0;
+      const max = 99999999;
+      const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+      return randomNumber.toString().padStart(8, '0'); // با صفرهای پیش‌رو پر می‌شود
+    };
+
+    let uniqueIssueTracking;
+    let existingTracking;
+
+    do {
+      uniqueIssueTracking = generateRandomNumber();
+      // بررسی وجود issue_tracking در پایگاه داده
+      existingTracking = await this.reserveRepository.findOne({
+        where: { issue_tracking: uniqueIssueTracking },
+      });
+    } while (existingTracking);
+
+    return uniqueIssueTracking;
+  }
+
   async createReserve(
     createReserveDto: CreateReserveDto,
   ): Promise<ReserveEntity> {
@@ -50,7 +73,7 @@ export class ReserveService {
       );
     }
 
-    const issue_tracking = `OR-${uuidv4()}`;
+    const issue_tracking = `OR-${await this.generateUniqueIssueTracking()}`;
 
     // آغاز تراکنش
     const queryRunner = this.dataSource.createQueryRunner();
