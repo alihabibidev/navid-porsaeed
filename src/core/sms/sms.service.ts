@@ -5,7 +5,11 @@ export class SmsService {
   private axiosInstance: AxiosInstance;
   // private readonly BASE_URL = 'http://185.112.33.62/api/v1/rest';
   private readonly BASE_URL =
-    'https://api-gateway.adsefid.com/webservice/api/v1.0/';
+    'https://api-gateway.adsefid.com/webservice/api/v1.0/SendSingleMessage';
+  // private readonly BASE_URL =
+  //   'http://api-gateway.adsefid.com/webservice/api/v1.0/SendSingleMessage';
+  // private readonly BASE_URL =
+  //   '/api-gateway.adsefid.com/webservice/api/v1.0/SendSingleMessage';
   constructor() {
     this.axiosInstance = axios.create({
       baseURL: this.BASE_URL,
@@ -36,7 +40,8 @@ export class SmsService {
 
       headers['x-api-key'] = 'e4a210753806824ce159ef1de52dbb94884059c5';
       const response = await this.axiosInstance.post(
-        'SendSingleMessage',
+        // 'SendSingleMessage',
+        '',
         {
           receptor,
           lineNumber,

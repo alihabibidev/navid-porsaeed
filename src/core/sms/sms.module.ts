@@ -20,15 +20,15 @@ export class SmsModule implements OnModuleInit {
     console.log('The module has been initialized.');
 
     // مقداردهی اولیه برای ارسال پیامک
-    const smsDetails: SendSMSDto = {
-      receptor: '09358199598',
-      message: 'متن پیام لغو 11',
-      lineNumber: '9890000000',
-      tag: 'test',
-    };
+    // const smsDetails: SendSMSDto = {
+    //   receptor: '09358199598',
+    //   message: 'متن پیام لغو 11',
+    //   lineNumber: '9890000000',
+    //   tag: 'test',
+    // };
 
-    // صدا زدن تابع sendSMS
-    const result = await this.smsService.sendSMS(smsDetails);
-    console.log('SMS Send Result:', result);
+    // // صدا زدن تابع sendSMS
+    // const result = await this.smsService.sendSMS(smsDetails);
+    // console.log('SMS Send Result:', result);
   }
 }
