@@ -12,6 +12,7 @@ import { HttpModule } from '../http/http.module';
     }),
   ],
   providers: [SmsService],
+  exports: [SmsService],
 })
 export class SmsModule implements OnModuleInit {
   constructor(private readonly smsService: SmsService) {}

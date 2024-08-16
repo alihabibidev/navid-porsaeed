@@ -17,6 +17,7 @@ import { ReserveStateEnum } from './reserve.enum';
 import { GetReservesFilterDto } from './dto/get-reserves-filter.dto';
 import { convertJalaliToGregorian } from '#src/common/utils/date.utils';
 import { v4 as uuidv4 } from 'uuid';
+import { SmsService } from '#src/core/sms/sms.service';
 
 @Injectable()
 export class ReserveService {
@@ -26,6 +27,7 @@ export class ReserveService {
     @InjectRepository(AllDaysPossibleEntity)
     private allDaysPossibleRepository: Repository<AllDaysPossibleEntity>,
     private dataSource: DataSource,
+    private smsService: SmsService,
   ) {}
 
   private async generateUniqueIssueTracking(): Promise<string> {
@@ -153,6 +155,8 @@ export class ReserveService {
       // تایید تراکنش
       await queryRunner.commitTransaction();
 
+      //TODO Send SMS
+
       return savedReserve;
     } catch (error) {
       // در صورت بروز خطا، لغو تراکنش
@@ -242,16 +246,50 @@ export class ReserveService {
   }
 
   async changeState(reserveId, state) {
+    const reserve = await this.reserveRepository.findOne({
+      where: {
+        id: reserveId,
+      },
+    });
+
+    if (state === ReserveStateEnum.CANCELLED_ADMIN) {
+      const day = await this.allDaysPossibleRepository.findOne({
+        where: {
+          day: reserve.day,
+          month: reserve.month,
+          year: reserve.year,
+        },
+      });
+      switch (reserve.hours) {
+        case 8:
+          day.reservationsAt8 -= 1;
+          break;
+        case 9:
+          day.reservationsAt9 -= 1;
+          break;
+        case 10:
+          day.reservationsAt10 -= 1;
+          break;
+        case 11:
+          day.reservationsAt11 -= 1;
+          break;
+        default:
+          throw new HttpException(
+            'Invalid hour for reservation',
+            HttpStatus.BAD_REQUEST,
+          );
+      }
+      await this.allDaysPossibleRepository.save(day);
+    }
+
     const result = await this.reserveRepository.update(
       { id: reserveId },
       { state },
     );
-    // const updatedReserve = await this.reserveRepository.findOne({
-    //   where: { id: reserveId },
-    // });
-    // console.log(updatedReserve);
 
     //TODO Send SMS
+    // await this.smsService.sendSMS({key:value})
+    // `درخواست شما به وضعیت${state}تغییر کرد`;
     return result;
   }
 
