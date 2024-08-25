@@ -187,22 +187,31 @@ export class ReserveService {
     }
 
     // تبدیل تاریخ‌های جلالی به میلادی
-    let startYear, startMonth, startDay;
-    let endYear, endMonth, endDay;
+    const [startYearStr, startMonthStr, startDayStr] = startDate.split('-');
+    const [endYearStr, endMonthStr, endDayStr] = endDate.split('-');
 
-    if (startDate) {
-      const start = convertJalaliToGregorian(startDate);
-      startYear = start.getFullYear();
-      startMonth = start.getMonth() + 1; // ماه‌ها در جاوااسکریپت از 0 شروع می‌شوند
-      startDay = start.getDate();
-    }
+    const startYear = parseInt(startYearStr);
+    const startMonth = parseInt(startMonthStr);
+    const startDay = parseInt(startDayStr);
+    const endYear = parseInt(endYearStr);
+    const endMonth = parseInt(endMonthStr);
+    const endDay = parseInt(endDayStr);
 
-    if (endDate) {
-      const end = convertJalaliToGregorian(endDate);
-      endYear = end.getFullYear();
-      endMonth = end.getMonth() + 1;
-      endDay = end.getDate();
-    }
+    // if (startDate) {
+    //   const start = convertJalaliToGregorian(startDate);
+    //   startYear = start.getFullYear();
+    //   startMonth = start.getMonth() + 1; // ماه‌ها در جاوااسکریپت از 0 شروع می‌شوند
+    //   startDay = start.getDate();
+    //   console.log(startYear, startMonth, startDay);
+    // }
+
+    // if (endDate) {
+    //   const end = convertJalaliToGregorian(endDate);
+    //   endYear = end.getFullYear();
+    //   endMonth = end.getMonth() + 1;
+    //   endDay = end.getDate();
+    //   console.log(endYear, endMonth, endDay);
+    // }
 
     // فیلتر بر اساس بازه زمانی
     if (startDate && endDate) {
