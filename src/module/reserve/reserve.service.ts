@@ -187,15 +187,21 @@ export class ReserveService {
     }
 
     // تبدیل تاریخ‌های جلالی به میلادی
-    const [startYearStr, startMonthStr, startDayStr] = startDate.split('-');
-    const [endYearStr, endMonthStr, endDayStr] = endDate.split('-');
+    let startYear, startMonth, startDay, endYear, endMonth, endDay;
+    if (startDate) {
+      const [startYearStr, startMonthStr, startDayStr] = startDate.split('-');
+      startYear = parseInt(startYearStr);
+      startMonth = parseInt(startMonthStr);
+      startDay = parseInt(startDayStr);
+    }
 
-    const startYear = parseInt(startYearStr);
-    const startMonth = parseInt(startMonthStr);
-    const startDay = parseInt(startDayStr);
-    const endYear = parseInt(endYearStr);
-    const endMonth = parseInt(endMonthStr);
-    const endDay = parseInt(endDayStr);
+    if (endDate) {
+      const [endYearStr, endMonthStr, endDayStr] = endDate.split('-');
+
+      endYear = parseInt(endYearStr);
+      endMonth = parseInt(endMonthStr);
+      endDay = parseInt(endDayStr);
+    }
 
     // if (startDate) {
     //   const start = convertJalaliToGregorian(startDate);
