@@ -106,6 +106,10 @@ export class AllDaysPossibleService {
   ): Promise<AllDaysPossibleEntity> {
     const day = await this.dayRepository.findOne({ where: { id } });
 
+    if (!day) {
+      throw new HttpException('Day not found', HttpStatus.NOT_FOUND);
+    }
+
     //TODO validation reserve_at 8,9,10,11
     //TODO just uptdate capacity 8,9,10,11 and isHoliday
 

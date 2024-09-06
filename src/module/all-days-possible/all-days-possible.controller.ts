@@ -55,10 +55,6 @@ export class AllDaysPossibleController {
   ): Promise<AllDaysPossibleEntity> {
     const updatedDay = await this.dayService.updateDay(id, updateData);
 
-    if (!updatedDay) {
-      throw new HttpException('Day not found', HttpStatus.NOT_FOUND);
-    }
-
     return updatedDay;
   }
 }

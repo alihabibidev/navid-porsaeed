@@ -20,6 +20,7 @@ import {
   adminRoleToUp,
   editorRoleToUp,
 } from '#src/common/constant/role.constant';
+import { UpdateRepairDto } from './dto/update-reserve.dto';
 
 @Controller('reserve')
 export class ReserveController {
@@ -89,6 +90,25 @@ export class ReserveController {
   ): Promise<any> {
     try {
       return await this.reserveService.changeState(reserveId, state);
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Public()
+  @Patch('/update-repair-reserve/:id')
+  async updateRepairInquiryToRequestUser(
+    @Body() updateRepairDto: UpdateRepairDto,
+    @Param() id: number,
+  ): Promise<ReserveEntity> {
+    try {
+      return await this.reserveService.updateRepairInquiryToRequestUser(
+        updateRepairDto,
+        id,
+      );
     } catch (error) {
       throw new HttpException(
         error.message,

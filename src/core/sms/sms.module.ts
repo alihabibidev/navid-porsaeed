@@ -24,7 +24,8 @@ export class SmsModule implements OnModuleInit {
     // const smsDetails: SendSMSDto = {
     //   receptor: '09358199598',
     //   message: 'متن پیام لغو 11',
-    //   lineNumber: '9890000000',
+    //   lineNumber: '989998883664',
+    //   // lineNumber: '9890000000',
     //   tag: 'test',
     // };
 

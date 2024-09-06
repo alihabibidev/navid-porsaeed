@@ -1,5 +1,10 @@
 // src/module/reserve/reserve.service.ts
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Between,
@@ -18,6 +23,7 @@ import { GetReservesFilterDto } from './dto/get-reserves-filter.dto';
 import { convertJalaliToGregorian } from '#src/common/utils/date.utils';
 import { v4 as uuidv4 } from 'uuid';
 import { SmsService } from '#src/core/sms/sms.service';
+import { UpdateRepairDto } from './dto/update-reserve.dto';
 
 @Injectable()
 export class ReserveService {
@@ -64,13 +70,16 @@ export class ReserveService {
     const existingReserve = await this.reserveRepository.findOne({
       where: {
         chassis_number,
-        state: ReserveStateEnum.REQUEST_USER,
+        state: In([
+          ReserveStateEnum.REQUEST_USER,
+          ReserveStateEnum.REPAIR_INQUIRY,
+        ]),
       },
     });
 
     if (existingReserve) {
       throw new HttpException(
-        'A reservation with this chassis number is already in the REQUEST_USER state.',
+        'A reservation with this chassis number is already exists.',
         HttpStatus.CONFLICT,
       );
     }
@@ -83,63 +92,65 @@ export class ReserveService {
     await queryRunner.startTransaction();
 
     try {
-      // پیدا کردن روز مربوطه در AllDaysPossibleEntity
-      const dayRecord = await queryRunner.manager.findOne(
-        AllDaysPossibleEntity,
-        {
-          where: {
-            year: otherData.year,
-            month: otherData.month,
-            day: otherData.day,
+      if (hours !== null && otherData.year !== null) {
+        // پیدا کردن روز مربوطه در AllDaysPossibleEntity
+        const dayRecord = await queryRunner.manager.findOne(
+          AllDaysPossibleEntity,
+          {
+            where: {
+              year: otherData.year,
+              month: otherData.month,
+              day: otherData.day,
+            },
           },
-        },
-      );
+        );
 
-      if (!dayRecord) {
-        throw new HttpException('Day not found', HttpStatus.NOT_FOUND);
+        if (!dayRecord) {
+          throw new HttpException('Day not found', HttpStatus.NOT_FOUND);
+        }
+
+        if (hours === 8) {
+          if (dayRecord.capacityAt8 === dayRecord.reservationsAt8) {
+            throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+          }
+        } else if (hours === 9) {
+          if (dayRecord.capacityAt9 === dayRecord.reservationsAt9) {
+            throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+          }
+        } else if (hours === 10) {
+          if (dayRecord.capacityAt10 === dayRecord.reservationsAt10) {
+            throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+          }
+        } else if (hours === 11) {
+          if (dayRecord.capacityAt11 === dayRecord.reservationsAt11) {
+            throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+          }
+        }
+
+        // بروزرسانی ظرفیت رزرو بر اساس ساعت رزرو شده
+        switch (hours) {
+          case 8:
+            dayRecord.reservationsAt8 += 1;
+            break;
+          case 9:
+            dayRecord.reservationsAt9 += 1;
+            break;
+          case 10:
+            dayRecord.reservationsAt10 += 1;
+            break;
+          case 11:
+            dayRecord.reservationsAt11 += 1;
+            break;
+          default:
+            throw new HttpException(
+              'Invalid hour for reservation',
+              HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        // ذخیره تغییرات
+        await queryRunner.manager.save(dayRecord);
       }
-
-      if (hours === 8) {
-        if (dayRecord.capacityAt8 === dayRecord.reservationsAt8) {
-          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
-        }
-      } else if (hours === 9) {
-        if (dayRecord.capacityAt9 === dayRecord.reservationsAt9) {
-          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
-        }
-      } else if (hours === 10) {
-        if (dayRecord.capacityAt10 === dayRecord.reservationsAt10) {
-          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
-        }
-      } else if (hours === 11) {
-        if (dayRecord.capacityAt11 === dayRecord.reservationsAt11) {
-          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
-        }
-      }
-
-      // بروزرسانی ظرفیت رزرو بر اساس ساعت رزرو شده
-      switch (hours) {
-        case 8:
-          dayRecord.reservationsAt8 += 1;
-          break;
-        case 9:
-          dayRecord.reservationsAt9 += 1;
-          break;
-        case 10:
-          dayRecord.reservationsAt10 += 1;
-          break;
-        case 11:
-          dayRecord.reservationsAt11 += 1;
-          break;
-        default:
-          throw new HttpException(
-            'Invalid hour for reservation',
-            HttpStatus.BAD_REQUEST,
-          );
-      }
-
-      // ذخیره تغییرات
-      await queryRunner.manager.save(dayRecord);
 
       // ایجاد رزرو جدید
       const reserve = this.reserveRepository.create({
@@ -261,11 +272,18 @@ export class ReserveService {
   }
 
   async changeState(reserveId, state) {
+    if (state === ReserveStateEnum.CANCELLED_USER) {
+      throw new HttpException('Invalid State', HttpStatus.BAD_REQUEST);
+    }
     const reserve = await this.reserveRepository.findOne({
       where: {
         id: reserveId,
       },
     });
+
+    if (reserve.state === ReserveStateEnum.REPAIR_INQUIRY) {
+      throw new HttpException('Invalid Old State', HttpStatus.BAD_REQUEST);
+    }
 
     if (state === ReserveStateEnum.CANCELLED_ADMIN) {
       const day = await this.allDaysPossibleRepository.findOne({
@@ -354,22 +372,7 @@ export class ReserveService {
         throw new HttpException('Reservation not found', HttpStatus.NOT_FOUND);
       }
 
-      // تبدیل تاریخ رزرو به میلادی
-      const reserveDate = convertJalaliToGregorian(
-        `${reserve.year}-${reserve.month}-${reserve.day}`,
-      );
-      reserveDate.setHours(reserve.hours, 0, 0, 0); // تنظیم ساعت به ساعت رزرو
-
-      // محاسبه تفاوت زمانی
-      const now = new Date();
-      const diffInMilliseconds = reserveDate.getTime() - now.getTime();
-      const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
-
-      // بررسی اگر بیشتر از 24 ساعت به تاریخ رزرو مانده باشد
-      if (diffInHours >= 24) {
-        reserve.state = ReserveStateEnum.CANCELLED_USER;
-        await queryRunner.manager.save(reserve);
-
+      if (reserve.state !== ReserveStateEnum.REPAIR_INQUIRY) {
         // یافتن روز مربوط به رزرو در جدول AllDaysPossibleEntity
         const dayRecord = await queryRunner.manager.findOne(
           AllDaysPossibleEntity,
@@ -409,18 +412,43 @@ export class ReserveService {
 
         await queryRunner.manager.save(dayRecord);
 
-        // تایید تراکنش
-        await queryRunner.commitTransaction();
-
-        //TODO Send SMS
-
-        return reserve;
-      } else {
-        throw new HttpException(
-          'Reservation cannot be canceled. Less than 24 hours remain.',
-          HttpStatus.BAD_REQUEST,
+        // تبدیل تاریخ رزرو به میلادی
+        const reserveDate = convertJalaliToGregorian(
+          `${reserve.year}-${reserve.month}-${reserve.day}`,
         );
+        reserveDate.setHours(reserve.hours, 0, 0, 0); // تنظیم ساعت به ساعت رزرو
+
+        // محاسبه تفاوت زمانی
+        const now = new Date();
+        const diffInMilliseconds = reserveDate.getTime() - now.getTime();
+        const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
+
+        // بررسی اگر بیشتر از 24 ساعت به تاریخ رزرو مانده باشد
+        if (diffInHours >= 24) {
+          reserve.state = ReserveStateEnum.CANCELLED_USER;
+          await queryRunner.manager.save(reserve);
+
+          // تایید تراکنش
+          await queryRunner.commitTransaction();
+
+          //TODO Send SMS
+
+          return reserve;
+        } else {
+          throw new HttpException(
+            'Reservation cannot be canceled. Less than 24 hours remain.',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
       }
+
+      reserve.state = ReserveStateEnum.CANCELLED_USER;
+      await queryRunner.manager.save(reserve);
+
+      // تایید تراکنش
+      await queryRunner.commitTransaction();
+
+      //TODO Send SMS
     } catch (error) {
       // در صورت بروز خطا، لغو تراکنش
       await queryRunner.rollbackTransaction();
@@ -430,6 +458,111 @@ export class ReserveService {
       await queryRunner.release();
     }
   }
+
+  async updateRepairInquiryToRequestUser(
+    updateRepairDto: UpdateRepairDto,
+    id: number,
+  ) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const reserve = await this.reserveRepository.findOne({ where: { id } });
+
+      if (!reserve) {
+        throw new HttpException('reserve not found', HttpStatus.NOT_FOUND);
+      }
+
+      //TODO validation reserve_at 8,9,10,11
+      //TODO just uptdate capacity 8,9,10,11 and isHoliday
+
+      if (reserve.state !== ReserveStateEnum.REPAIR_INQUIRY) {
+        throw new BadRequestException('invalid reserve');
+      }
+
+      if (
+        updateRepairDto.state !== ReserveStateEnum.CANCELLED_ADMIN &&
+        updateRepairDto.state !== ReserveStateEnum.REQUEST_USER
+      ) {
+        throw new BadRequestException('invalid state');
+      }
+
+      // پیدا کردن روز مربوطه در AllDaysPossibleEntity
+      const dayRecord = await queryRunner.manager.findOne(
+        AllDaysPossibleEntity,
+        {
+          where: {
+            year: updateRepairDto.year,
+            month: updateRepairDto.month,
+            day: updateRepairDto.day,
+          },
+        },
+      );
+
+      if (!dayRecord) {
+        throw new HttpException('Day not found', HttpStatus.NOT_FOUND);
+      }
+
+      if (updateRepairDto.hours === 8) {
+        if (dayRecord.capacityAt8 === dayRecord.reservationsAt8) {
+          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+        }
+      } else if (updateRepairDto.hours === 9) {
+        if (dayRecord.capacityAt9 === dayRecord.reservationsAt9) {
+          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+        }
+      } else if (updateRepairDto.hours === 10) {
+        if (dayRecord.capacityAt10 === dayRecord.reservationsAt10) {
+          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+        }
+      } else if (updateRepairDto.hours === 11) {
+        if (dayRecord.capacityAt11 === dayRecord.reservationsAt11) {
+          throw new HttpException('Full Capacity', HttpStatus.BAD_REQUEST);
+        }
+      }
+
+      // بروزرسانی ظرفیت رزرو بر اساس ساعت رزرو شده
+      switch (updateRepairDto.hours) {
+        case 8:
+          dayRecord.reservationsAt8 += 1;
+          break;
+        case 9:
+          dayRecord.reservationsAt9 += 1;
+          break;
+        case 10:
+          dayRecord.reservationsAt10 += 1;
+          break;
+        case 11:
+          dayRecord.reservationsAt11 += 1;
+          break;
+        default:
+          throw new HttpException(
+            'Invalid hour for reservation',
+            HttpStatus.BAD_REQUEST,
+          );
+      }
+
+      // ذخیره تغییرات
+      await queryRunner.manager.save(dayRecord);
+
+      Object.assign(reserve, updateRepairDto);
+
+      const result = await queryRunner.manager.save(reserve);
+      // const result = await this.reserveRepository.save(reserve);
+
+      // تایید تراکنش
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      // در صورت بروز خطا، لغو تراکنش
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      // در نهایت، آزادسازی منابع
+      await queryRunner.release();
+    }
+  }
+
   //   async createReserve(
   //     createReserveDto: CreateReserveDto,
   //   ): Promise<ReserveEntity> {

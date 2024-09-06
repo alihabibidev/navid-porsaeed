@@ -41,25 +41,25 @@ export class ReserveEntity extends BaseEntity {
   @Column()
   model_name: string;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   allDaysPossibleId: number;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   year: number;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   month: number;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   day: number;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   weekdayNumber: number;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   weekdayName: string;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   monthNames: string;
 
   @Column()
@@ -67,12 +67,13 @@ export class ReserveEntity extends BaseEntity {
 
   @Column('enum', {
     enum: ReserveHoursEnum,
+    nullable: true,
+    default: null,
   })
   hours: ReserveHoursEnum;
 
   @Column('enum', {
     enum: ReserveStateEnum,
-    default: ReserveStateEnum.REQUEST_USER,
   })
   state: ReserveStateEnum;
 
