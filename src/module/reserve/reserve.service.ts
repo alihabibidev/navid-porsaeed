@@ -86,6 +86,8 @@ export class ReserveService {
 
     const issue_tracking = `OR-${await this.generateUniqueIssueTracking()}`;
 
+    let state = ReserveStateEnum.REPAIR_INQUIRY;
+
     // آغاز تراکنش
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -93,6 +95,7 @@ export class ReserveService {
 
     try {
       if (hours !== null && otherData.year !== null) {
+        state = ReserveStateEnum.REQUEST_USER;
         // پیدا کردن روز مربوطه در AllDaysPossibleEntity
         const dayRecord = await queryRunner.manager.findOne(
           AllDaysPossibleEntity,
@@ -159,6 +162,7 @@ export class ReserveService {
         issue_tracking,
         allDaysPossibleId,
         hours,
+        state,
       });
 
       const savedReserve = await queryRunner.manager.save(reserve);
