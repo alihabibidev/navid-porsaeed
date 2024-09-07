@@ -98,7 +98,7 @@ export class ReserveController {
     }
   }
 
-  @Public()
+  @Roles(...editorRoleToUp)
   @Patch('/update-repair-reserve/:id')
   async updateRepairInquiryToRequestUser(
     @Body() updateRepairDto: UpdateRepairDto,
