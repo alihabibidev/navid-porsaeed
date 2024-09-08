@@ -94,7 +94,7 @@ export class ReserveService {
     await queryRunner.startTransaction();
 
     try {
-      if (hours !== null && otherData.year !== null) {
+      if (hours && otherData.year) {
         state = ReserveStateEnum.REQUEST_USER;
         // پیدا کردن روز مربوطه در AllDaysPossibleEntity
         const dayRecord = await queryRunner.manager.findOne(
