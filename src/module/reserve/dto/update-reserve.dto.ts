@@ -27,27 +27,35 @@ import { ReserveHoursEnum, ReserveStateEnum } from '../reserve.enum';
 
 export class UpdateRepairDto {
   @IsInt()
+  @IsOptional()
   allDaysPossibleId: number;
 
   @IsInt()
+  @IsOptional()
   year: number;
 
   @IsInt()
+  @IsOptional()
   month: number;
 
   @IsInt()
+  @IsOptional()
   day: number;
 
   @IsInt()
+  @IsOptional()
   weekdayNumber: number;
 
   @IsString()
+  @IsOptional()
   weekdayName: string;
 
   @IsString()
+  @IsOptional()
   monthNames: string;
 
   @IsEnum(ReserveHoursEnum)
+  @IsOptional()
   hours: ReserveHoursEnum;
 
   @IsEnum(ReserveStateEnum)
