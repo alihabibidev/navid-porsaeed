@@ -185,6 +185,7 @@ export class ReserveService {
           console.error(error);
         }
       } else {
+        //TODO Send SMS
         try {
           await this.smsService.sendSMS({
             message: `
