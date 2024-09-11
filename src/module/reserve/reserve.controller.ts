@@ -102,7 +102,7 @@ export class ReserveController {
   @Patch('/update-repair-reserve/:id')
   async updateRepairInquiryToRequestUser(
     @Body() updateRepairDto: UpdateRepairDto,
-    @Param() id: number,
+    @Param('id') id: number,
   ): Promise<ReserveEntity> {
     try {
       return await this.reserveService.updateRepairInquiryToRequestUser(
