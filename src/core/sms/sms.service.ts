@@ -25,10 +25,10 @@ export class SmsService {
   }
 
   async sendSMS({
-    lineNumber,
     receptor,
     message,
     tag,
+    lineNumber = '989998883664',
   }: SendSMSDto): Promise<any> {
     try {
       const headers: any = {};
@@ -71,6 +71,6 @@ export class SmsService {
 export interface SendSMSDto {
   receptor: string;
   message: string;
-  lineNumber: string;
+  lineNumber?: string;
   tag?: string;
 }

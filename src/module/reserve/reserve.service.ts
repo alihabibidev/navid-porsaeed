@@ -24,6 +24,7 @@ import { convertJalaliToGregorian } from '#src/common/utils/date.utils';
 import { v4 as uuidv4 } from 'uuid';
 import { SmsService } from '#src/core/sms/sms.service';
 import { UpdateRepairDto } from './dto/update-reserve.dto';
+import { log } from 'console';
 
 @Injectable()
 export class ReserveService {
@@ -170,7 +171,32 @@ export class ReserveService {
       // تایید تراکنش
       await queryRunner.commitTransaction();
 
-      //TODO Send SMS
+      if (!hours) {
+        //TODO Send SMS
+        try {
+          await this.smsService.sendSMS({
+            message: `
+          درخواست تعمیر شما ثبت شد
+          لغو 11
+          `,
+            receptor: reserve.mobile,
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        try {
+          await this.smsService.sendSMS({
+            message: `
+            درخواست شما ثبت شد
+            لغو 11
+            `,
+            receptor: otherData.mobile,
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
 
       return savedReserve;
     } catch (error) {
@@ -325,6 +351,17 @@ export class ReserveService {
     );
 
     //TODO Send SMS
+    try {
+      await this.smsService.sendSMS({
+        message: `
+        وضعیت درخواست شما تغییر کرد
+        لغو 11
+        `,
+        receptor: reserve.mobile,
+      });
+    } catch (error) {
+      console.error(error);
+    }
     // await this.smsService.sendSMS({key:value})
     // `درخواست شما به وضعیت${state}تغییر کرد`;
     return result;
@@ -435,8 +472,6 @@ export class ReserveService {
           // تایید تراکنش
           await queryRunner.commitTransaction();
 
-          //TODO Send SMS
-
           return reserve;
         } else {
           throw new HttpException(
@@ -453,6 +488,17 @@ export class ReserveService {
       await queryRunner.commitTransaction();
 
       //TODO Send SMS
+      try {
+        await this.smsService.sendSMS({
+          message: `
+                    درخواست شما با موفقیت کنسل شد
+                    لغو 11
+                    `,
+          receptor: reserve.mobile,
+        });
+      } catch (error) {
+        console.error(error);
+      }
     } catch (error) {
       // در صورت بروز خطا، لغو تراکنش
       await queryRunner.rollbackTransaction();
@@ -487,6 +533,19 @@ export class ReserveService {
         const result = await queryRunner.manager.save(reserve);
 
         await queryRunner.commitTransaction();
+
+        //TODO Send SMS
+        try {
+          await this.smsService.sendSMS({
+            message: `
+              درخواست شما توسط ادمین کنسل شد
+              لغو 11
+              `,
+            receptor: reserve.mobile,
+          });
+        } catch (error) {
+          console.error(error);
+        }
 
         return result;
       } else {
@@ -572,6 +631,20 @@ export class ReserveService {
 
         // تایید تراکنش
         await queryRunner.commitTransaction();
+
+        //TODO Send SMS
+        try {
+          await this.smsService.sendSMS({
+            message: `
+                      درخواست شما توسط ادمین تایید شد
+                      لغو 11
+                      `,
+            receptor: reserve.mobile,
+          });
+        } catch (error) {
+          console.error(error);
+        }
+
         return result;
       }
     } catch (error) {
