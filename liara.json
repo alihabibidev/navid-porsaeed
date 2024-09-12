@@ -1,6 +1,8 @@
 {
   "platform": "node",
-  "app": "navid-porsaeed",
+  "app": "api-pkhauto",
+  "__comment1": "navid-porsaeed",
+  "__comment2": "api-pkhauto",
   "port": 3000,
   "node": {
     "mirror": false
