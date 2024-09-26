@@ -17,10 +17,8 @@ export class RefreshJwtGuard implements CanActivate {
       const request: Request = httpContext.getRequest<Request>();
       // const token = this.authService.extractToken(request);
       const rToken = request.body.refreshToken;
-      console.log('aliiiiiiiii', rToken);
 
       // request.user = await this.authService.validateAccessTokenForRefresh(token);
-      console.log('aliiiiiiiiii');
       request.user = await this.authService.validateRefreshToken(rToken);
       // await this.authService.validateRefreshToken(rToken);
 

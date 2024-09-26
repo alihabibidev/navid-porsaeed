@@ -21,10 +21,9 @@ import { AllDaysPossibleEntity } from '../all-days-possible/all-days-possible.en
 import { ReserveStateEnum } from './reserve.enum';
 import { GetReservesFilterDto } from './dto/get-reserves-filter.dto';
 import { convertJalaliToGregorian } from '#src/common/utils/date.utils';
-import { v4 as uuidv4 } from 'uuid';
 import { SmsService } from '#src/core/sms/sms.service';
 import { UpdateRepairDto } from './dto/update-reserve.dto';
-import { log } from 'console';
+// import * as jalaali from 'jalaali-js'; // Import jalaali-js
 
 @Injectable()
 export class ReserveService {
@@ -35,7 +34,12 @@ export class ReserveService {
     private allDaysPossibleRepository: Repository<AllDaysPossibleEntity>,
     private dataSource: DataSource,
     private smsService: SmsService,
-  ) {}
+  ) {
+    // console.log(
+    //   'dateeeeeeeee',
+    //   new Intl.DateTimeFormat('fa-IR').format(new Date()),
+    // );
+  }
 
   private async generateUniqueIssueTracking(): Promise<string> {
     const generateRandomNumber = (): string => {
@@ -176,8 +180,9 @@ export class ReserveService {
         try {
           await this.smsService.sendSMS({
             message: `
-          درخواست تعمیر شما ثبت شد
-          لغو 11
+          مدیران خودرو‌ پورسعید‌خیلی کد ۳۴۲
+درخواست شما برای تعمیرات در سامانه جهت بررسی ثبت شد در صورت تایید کارشناسان پذیرش با شما تماس خواهند گرفت
+لغو 11\n
           `,
             receptor: reserve.mobile,
           });
@@ -189,8 +194,9 @@ export class ReserveService {
         try {
           await this.smsService.sendSMS({
             message: `
-            درخواست شما ثبت شد
-            لغو 11
+مدیران خودرو‌ پورسعید‌خیلی کد ۳۴۲
+نوبت شما جهت سرویس دوره ای به شماره ${reserve.issue_tracking} در تاریخ ${new Intl.DateTimeFormat('fa-IR').format(new Date())} ثبت شد.
+لغو 11\n
             `,
             receptor: otherData.mobile,
           });
@@ -352,16 +358,19 @@ export class ReserveService {
     );
 
     //TODO Send SMS
-    try {
-      await this.smsService.sendSMS({
-        message: `
-        وضعیت درخواست شما تغییر کرد
-        لغو 11
-        `,
-        receptor: reserve.mobile,
-      });
-    } catch (error) {
-      console.error(error);
+    if (state === ReserveStateEnum.DONE) {
+      try {
+        await this.smsService.sendSMS({
+          message: `
+مدیران خودرو‌ پورسعید‌خیلی کد ۳۴۲
+سرویس دوره ای شما در نمایندگی انجام شده است ، جهت تحویل خودرو به نمایندگی مراجعه بفرمایید.
+          لغو 11\n
+          `,
+          receptor: reserve.mobile,
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
     // await this.smsService.sendSMS({key:value})
     // `درخواست شما به وضعیت${state}تغییر کرد`;
@@ -492,8 +501,9 @@ export class ReserveService {
       try {
         await this.smsService.sendSMS({
           message: `
-                    درخواست شما با موفقیت کنسل شد
-                    لغو 11
+مدیران خودرو‌ پورسعید‌خیلی کد ۳۴۲
+نوبت شما در سامانه لغو شد
+                    لغو 11\n
                     `,
           receptor: reserve.mobile,
         });
@@ -536,17 +546,17 @@ export class ReserveService {
         await queryRunner.commitTransaction();
 
         //TODO Send SMS
-        try {
-          await this.smsService.sendSMS({
-            message: `
-              درخواست شما توسط ادمین کنسل شد
-              لغو 11
-              `,
-            receptor: reserve.mobile,
-          });
-        } catch (error) {
-          console.error(error);
-        }
+        // try {
+        //   await this.smsService.sendSMS({
+        //     message: `
+        //       درخواست شما توسط ادمین کنسل شد
+        //       لغو 11
+        //       `,
+        //     receptor: reserve.mobile,
+        //   });
+        // } catch (error) {
+        //   console.error(error);
+        // }
 
         return result;
       } else {
@@ -637,8 +647,9 @@ export class ReserveService {
         try {
           await this.smsService.sendSMS({
             message: `
-                      درخواست شما توسط ادمین تایید شد
-                      لغو 11
+مدیران خودرو‌ پورسعید‌خیلی کد ۳۴۲
+نوبت شما جهت  تعمیرات به شماره ${reserve.issue_tracking} در تاریخ ${new Intl.DateTimeFormat('fa-IR').format(new Date())} ثبت شد.
+لغو 11\n
                       `,
             receptor: reserve.mobile,
           });

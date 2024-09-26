@@ -34,7 +34,6 @@ export class SmsService {
       const headers: any = {};
 
       headers['x-api-key'] = 'e4a210753806824ce159ef1de52dbb94884059c5';
-      console.log('aliiiiiiii-1');
 
       const response = await this.axiosInstance.post(
         // 'SendSingleMessage',
@@ -49,7 +48,6 @@ export class SmsService {
           headers,
         },
       );
-      console.log(response, 'aliiiiiiii-2');
 
       if (response.status !== 200) {
         throw new Error(`Authentication failed, status: ${response.status}`);

@@ -28,20 +28,16 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const { user_name, password } = loginDto;
-    console.log(loginDto);
 
     const user = await this.userRepository.findOneBy({ user_name });
-    console.log(user);
 
     if (!user) {
       throw new UnauthorizedException('username or password is incorrect');
     }
-    console.log(compareSync(password, user.password));
 
     if (!compareSync(password, user.password)) {
       throw new UnauthorizedException('username or password is incorrect');
     }
-    console.log(loginDto, user);
     const { accessToken, refreshToken } = this.makeTokensForUser({
       role: user.role,
       user_name: user.user_name,
@@ -174,37 +170,24 @@ export class AuthService {
 
   async validateAccessTokenForRefresh(token: string) {
     try {
-      console.log('validateAccessTokenForRefresh1');
-
       const payload = this.jwtService.verify<JwtPayload>(token, {
         ignoreExpiration: true,
         secret: this.configService.getOrThrow('auth.jwtAccessTokenSecret'),
       });
-      console.log('validateAccessTokenForRefresh2');
 
       // Access token is valid, check the expiration date
       const expirationTime = payload.exp * 1000; // Convert to milliseconds
       const currentTime = Date.now();
-      console.log(
-        'validateAccessTokenForRefresh2.1',
-        expirationTime,
-        currentTime,
-      );
 
       if (currentTime < expirationTime) {
-        console.log('aaaa');
-
         throw new UnauthorizedException('Access token not expired');
       }
       // if (currentTime > expirationTime) {
       //   throw new UnauthorizedException('Access token not expired');
       // }
-      console.log('validateAccessTokenForRefresh3');
 
       return true;
     } catch (error) {
-      console.log('validateAccessTokenForRefresh4', error);
-
       throw new UnauthorizedException('Invalid token');
     }
   }

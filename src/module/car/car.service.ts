@@ -56,8 +56,6 @@ export class CarService {
   /* -------------------------------------------------------------------------- */
 
   async createType(createCarTypeDto: CreateCarTypeDto): Promise<CarTypeEntity> {
-    console.log(createCarTypeDto);
-
     const carType = this.carTypeRepository.create(createCarTypeDto);
     return await this.carTypeRepository.save(carType);
   }
